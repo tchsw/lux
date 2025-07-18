@@ -9,18 +9,23 @@ function setup() {
   stroke(200, 230);
 
   mic = new p5.AudioIn();
-  mic.start();
-
-  amplitude = new p5.Amplitude();
-  amplitude.setInput(mic);
+  mic.start(() => {
+    // 接続に成功したらAmplitudeに明示的に渡す
+    mic.connect();
+    amplitude = new p5.Amplitude();
+    amplitude.setInput(mic);
+  });
 }
 
 function draw() {
   background(0, 20);
   translate(0, height / 2);
 
-  let level = amplitude.getLevel(); // 0.0〜1.0
-  let noiseStrength = map(level, 0, 0.3, 0.1, 1.0); // 音が大きいと揺らぎが強く
+  // amplitude 初期化されていないタイミングでのエラー防止
+  if (!amplitude) return;
+
+  let level = amplitude.getLevel(); // 0.0〜1.0程度の値
+  let noiseStrength = map(level, 0, 0.3, 0.1, 1.0, true); // 第6引数でclamp
 
   beginShape();
   for (let x = 0; x < width; x += 4) {
