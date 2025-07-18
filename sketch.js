@@ -8,15 +8,17 @@ function setup() {
   stroke(200, 230);
 
   mic = new p5.AudioIn();
-  mic.start();
+  mic.start(); // マイク入力の開始（アクセス許可必須）
 }
 
 function draw() {
   background(0, 20);
   translate(0, height / 2);
 
-  let level = mic.getLevel(); // 0.0〜1.0
-  let noiseStrength = map(level, 0, 0.3, 0.05, 1.5, true); // より強調
+  let level = mic.getLevel(); // マイク音量レベル（0〜1程度）
+
+  // マッピング強化（無音時でも微かに揺れる）
+  let noiseStrength = map(level, 0, 0.2, 0.05, 1.5, true);
 
   beginShape();
   for (let x = 0; x < width; x += 4) {
