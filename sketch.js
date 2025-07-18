@@ -1,6 +1,5 @@
-let t = 0;
 let mic;
-let amplitude;
+let t = 0;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -9,23 +8,15 @@ function setup() {
   stroke(200, 230);
 
   mic = new p5.AudioIn();
-  mic.start(() => {
-    // 接続に成功したらAmplitudeに明示的に渡す
-    mic.connect();
-    amplitude = new p5.Amplitude();
-    amplitude.setInput(mic);
-  });
+  mic.start();
 }
 
 function draw() {
   background(0, 20);
   translate(0, height / 2);
 
-  // amplitude 初期化されていないタイミングでのエラー防止
-  if (!amplitude) return;
-
-  let level = amplitude.getLevel(); // 0.0〜1.0程度の値
-  let noiseStrength = map(level, 0, 0.3, 0.1, 1.0, true); // 第6引数でclamp
+  let level = mic.getLevel(); // 0.0〜1.0
+  let noiseStrength = map(level, 0, 0.3, 0.05, 1.5, true); // より強調
 
   beginShape();
   for (let x = 0; x < width; x += 4) {
