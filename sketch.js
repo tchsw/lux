@@ -1,19 +1,26 @@
 let t = 0;
-let noiseStrength = 0.5;
+let mic;
+let amplitude;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   noFill();
   strokeWeight(1.5);
   stroke(200, 230);
+
+  mic = new p5.AudioIn();
+  mic.start();
+
+  amplitude = new p5.Amplitude();
+  amplitude.setInput(mic);
 }
 
 function draw() {
   background(0, 20);
   translate(0, height / 2);
 
-  let targetNoise = map(mouseY, 0, height, 1.0, 0.0);
-  noiseStrength = lerp(noiseStrength, targetNoise, 0.05);
+  let level = amplitude.getLevel(); // 0.0〜1.0
+  let noiseStrength = map(level, 0, 0.3, 0.1, 1.0); // 音が大きいと揺らぎが強く
 
   beginShape();
   for (let x = 0; x < width; x += 4) {
