@@ -1,18 +1,29 @@
 let t = 0;
 let numLines = 8;
 let waves = [];
+let colors = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   noFill();
-  strokeWeight(1);
-  stroke(255, 30); // 半透明で重なりを美しく
+  background(230); // 淡いグレー背景
 
-  // 各波形に個別の揺れパターン（周波数・振幅・ノイズシード）
+  // カラーパレット（ピンク・オレンジ・イエロー系パステル）
+  colors = [
+    color(255, 182, 193, 160), // light pink
+    color(255, 204, 153, 160), // peach
+    color(255, 240, 160, 160), // light yellow
+    color(255, 160, 160, 160), // soft red
+    color(255, 200, 170, 160), // coral
+    color(255, 220, 180, 160),
+    color(255, 190, 220, 160),
+    color(255, 210, 170, 160)
+  ];
+
   for (let i = 0; i < numLines; i++) {
     waves.push({
-      freq: random(0.003, 0.01),
-      amp: random(40, 80),
+      freq: random(0.003, 0.009),
+      amp: random(20, 40),
       noiseSeed: random(1000),
       phaseShift: random(TWO_PI)
     });
@@ -20,12 +31,11 @@ function setup() {
 }
 
 function draw() {
-  background(0, 20);
-
+  background(230, 30); // 軽い残像感を残す淡グレー
   for (let i = 0; i < numLines; i++) {
+    stroke(colors[i]);
     drawWaveLine(waves[i]);
   }
-
   t += 0.01;
 }
 
