@@ -1,44 +1,48 @@
 let mic;
 let t = 0;
 let numLines = 8;
-let noiseSeeds = [];
+let waves = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   noFill();
   strokeWeight(1);
-  stroke(200, 230);
+  stroke(255, 30); // 重ねても光らないよう透過度低め
 
   mic = new p5.AudioIn();
   mic.start();
 
+  // 各波形に異なるノイズシード・揺れパターンを設定
   for (let i = 0; i < numLines; i++) {
-    noiseSeeds.push(random(1000));
+    waves.push({
+      seed: random(1000),
+      freq: random(0.003, 0.008),
+      amp: random(0.5, 1.5)
+    });
   }
 }
 
 function draw() {
   background(0, 20);
 
-  let level = mic.getLevel(); // 0〜1程度
-  let noiseStrength = map(level, 0, 0.2, 0.1, 1.5, true); // 音の大きさで揺らぎ調整
+  let level = mic.getLevel(); // 0.0〜1.0
+  let noiseStrength = map(level, 0, 0.2, 0.1, 1.2, true);
 
+  // 全て中央ラインを基準に描画
   for (let i = 0; i < numLines; i++) {
-    let yOffset = map(i, 0, numLines - 1, height * 0.2, height * 0.8); // 縦位置
-    drawWaveLine(yOffset, noiseSeeds[i], noiseStrength);
+    drawCenteredWave(waves[i], noiseStrength);
   }
 
   t += 0.01;
 }
 
-function drawWaveLine(yBase, seed, strength) {
+function drawCenteredWave(wave, strength) {
   beginShape();
   for (let x = 0; x < width; x += 4) {
-    let freq = 0.005;
-    let sine = sin(TWO_PI * freq * x + t + seed);
-    let noiseVal = noise(x * 0.01 + seed, t * 0.01 + seed);
-    let y = yBase + map(sine * 0.7 + noiseVal * strength, -1, 1, -40, 40);
-    vertex(x, y);
+    let sine = sin(TWO_PI * wave.freq * x + t + wave.seed);
+    let noiseVal = noise(x * 0.01 + wave.seed, t * 0.01 + wave.seed);
+    let yOffset = map(sine * wave.amp + noiseVal * strength, -1, 1, -80, 80);
+    vertex(x, height / 2 + yOffset);
   }
   endShape();
 }
