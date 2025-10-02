@@ -72,13 +72,13 @@ function draw() {
   translate(width / 2, height / 2);
   const baseRadius = map(level, 0, 120, 80, min(width, height) / 2);
 
-  stroke(map(bass, 0, 255, 0, 70), 90, 100, 50);
+  stroke(0, 0, 100, 60);
   drawOrganicCircle(baseRadius * 0.9, 35);
 
-  stroke(map(mid, 0, 255, 120, 220), 80, 100, 55);
+  stroke(0, 0, 100, 70);
   drawOrganicCircle(baseRadius * 0.6, 55);
 
-  stroke(map(treble, 0, 255, 240, 360), 60, 100, 65);
+  stroke(0, 0, 100, 80);
   drawOrganicCircle(baseRadius * 0.4, 85);
   pop();
 
@@ -97,7 +97,7 @@ function draw() {
 
   push();
   translate(width / 2, height / 2);
-  stroke(200, 50, 100, 40);
+  stroke(0, 0, 100, 55);
   strokeWeight(2);
   beginShape();
   const step = 360 / spectrum.length;
@@ -180,13 +180,16 @@ class Firework {
       strokeWeight(2);
       for (let i = 0; i < this.trail.length; i++) {
         const t = this.trail[i];
+        const factor = this.trail.length <= 1 ? 0 : i / (this.trail.length - 1);
+        const weight = lerp(6, 2, factor);
+        strokeWeight(weight);
         point(t.x, t.y);
       }
-      strokeWeight(4);
+      strokeWeight(6);
       point(this.x, this.y);
     } else {
       noFill();
-      strokeWeight(2);
+      strokeWeight(3);
       for (const p of this.particles) {
         const alpha = map(p.life, 0, p.maxLife, 0, 90);
         stroke((this.hue + p.hueOffset) % 360, 80, 100, alpha);
@@ -197,12 +200,12 @@ class Firework {
 
   explode() {
     this.exploded = true;
-    const particleCount = 28;
+    const particleCount = 45;
     for (let i = 0; i < particleCount; i++) {
       const angle = random(360);
-      const speed = random(2, 6.5);
-      const hueOffset = random(-30, 30);
-      const lifespan = random(45, 70);
+      const speed = random(3.5, 8.5);
+      const hueOffset = random(-35, 35);
+      const lifespan = random(60, 95);
       this.particles.push({
         x: this.x,
         y: this.y,
@@ -221,7 +224,7 @@ class Firework {
 }
 
 function updateFireworks(level) {
-  const normalized = constrain((level - 20) / 100, 0, 1);
+  const normalized = constrain(map(level, 6, 90, 0, 1), 0, 1);
   const targetCount = floor(normalized * maxFireworks);
   const activeCount = fireworks.length;
   const spawnable = maxFireworks - activeCount;
@@ -231,7 +234,7 @@ function updateFireworks(level) {
     for (let i = 0; i < spawnNeeded; i++) {
       fireworks.push(new Firework());
     }
-  } else if (normalized > 0 && random() < normalized * 0.1 && fireworks.length < maxFireworks) {
+  } else if (level > 4 && random() < max(0.02, normalized * 0.15) && fireworks.length < maxFireworks) {
     fireworks.push(new Firework());
   }
 
